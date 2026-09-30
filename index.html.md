@@ -1,0 +1,565 @@
+<!DOCTYPE html>  
+<html lang="es">  
+<head>  
+  <meta charset="UTF-8">  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">  
+  <meta name="apple-mobile-web-app-capable" content="yes">  
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">  
+  <meta name="apple-mobile-web-app-title" content="Aprende ES">  
+  <title>Aprende Español Pro</title>  
+    
+  <!-- Tesseract.js for OCR -->  
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>  
+  <!-- FontAwesome Icons -->  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  
+    
+  <style>  
+    :root {  
+      --bg-color: #f8f9fa;  
+      --card-bg: #ffffff;  
+      --primary: #007aff;  
+      --primary-hover: #0056b3;  
+      --text-main: #1c1c1e;  
+      --text-muted: #8e8e93;  
+      --border-color: #e5e5ea;  
+      --danger: #ff3b30;  
+      --success: #34c759;  
+      --radius: 16px;  
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.05);  
+    }  
+  
+    * {  
+      box-sizing: border-box;  
+      margin: 0;  
+      padding: 0;  
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;  
+      -webkit-tap-highlight-color: transparent;  
+    }  
+  
+    body {  
+      background-color: var(--bg-color);  
+      color: var(--text-main);  
+      padding-bottom: 90px;  
+      direction: ltr;  
+    }  
+  
+    header {  
+      background: rgba(255, 255, 255, 0.85);  
+      backdrop-filter: blur(20px);  
+      -webkit-backdrop-filter: blur(20px);  
+      position: sticky;  
+      top: 0;  
+      z-index: 100;  
+      padding: 16px 20px;  
+      border-bottom: 1px solid var(--border-color);  
+      display: flex;  
+      justify-content: space-between;  
+      align-items: center;  
+    }  
+  
+    header h1 {  
+      font-size: 20px;  
+      font-weight: 700;  
+      color: var(--primary);  
+      display: flex;  
+      align-items: center;  
+      gap: 8px;  
+    }  
+  
+    .container {  
+      max-width: 600px;  
+      margin: 0 auto;  
+      padding: 16px;  
+    }  
+  
+    .card {  
+      background: var(--card-bg);  
+      border-radius: var(--radius);  
+      padding: 20px;  
+      margin-bottom: 16px;  
+      box-shadow: var(--shadow);  
+      border: 1px solid var(--border-color);  
+    }  
+  
+    .card-title {  
+      font-size: 16px;  
+      font-weight: 600;  
+      margin-bottom: 12px;  
+      display: flex;  
+      align-items: center;  
+      gap: 8px;  
+      color: var(--text-main);  
+    }  
+  
+    .upload-box {  
+      border: 2px dashed var(--primary);  
+      border-radius: var(--radius);  
+      padding: 30px 16px;  
+      text-align: center;  
+      background: rgba(0, 122, 255, 0.03);  
+      cursor: pointer;  
+      transition: all 0.2s ease;  
+    }  
+  
+    .upload-box:active {  
+      background: rgba(0, 122, 255, 0.08);  
+      transform: scale(0.99);  
+    }  
+  
+    .upload-box i {  
+      font-size: 36px;  
+      color: var(--primary);  
+      margin-bottom: 10px;  
+    }  
+  
+    .upload-box p {  
+      font-size: 14px;  
+      color: var(--text-muted);  
+    }  
+  
+    input[type="file"] {  
+      display: none;  
+    }  
+  
+    .btn {  
+      background: var(--primary);  
+      color: #fff;  
+      border: none;  
+      padding: 12px 20px;  
+      border-radius: 12px;  
+      font-size: 15px;  
+      font-weight: 600;  
+      width: 100%;  
+      cursor: pointer;  
+      display: flex;  
+      justify-content: center;  
+      align-items: center;  
+      gap: 8px;  
+      margin-top: 10px;  
+      transition: background 0.2s;  
+    }  
+  
+    .btn:active {  
+      opacity: 0.8;  
+    }  
+  
+    .btn-danger {  
+      background: var(--danger);  
+    }  
+  
+    .btn-outline {  
+      background: transparent;  
+      color: var(--primary);  
+      border: 1px solid var(--primary);  
+    }  
+  
+    .progress-bar {  
+      width: 100%;  
+      height: 6px;  
+      background: var(--border-color);  
+      border-radius: 3px;  
+      overflow: hidden;  
+      margin-top: 12px;  
+      display: none;  
+    }  
+  
+    .progress-fill {  
+      height: 100%;  
+      width: 0%;  
+      background: var(--primary);  
+      transition: width 0.2s;  
+    }  
+  
+    .results-box {  
+      min-height: 100px;  
+      max-height: 250px;  
+      overflow-y: auto;  
+      border: 1px solid var(--border-color);  
+      border-radius: 12px;  
+      padding: 12px;  
+      background: #fafafa;  
+      font-size: 15px;  
+      line-height: 1.6;  
+      margin-top: 10px;  
+      white-space: pre-wrap;  
+    }  
+  
+    .detected-word {  
+      background: rgba(0, 122, 255, 0.1);  
+      color: var(--primary);  
+      padding: 2px 6px;  
+      border-radius: 6px;  
+      cursor: pointer;  
+      display: inline-block;  
+      margin: 2px;  
+    }  
+  
+    .dict-item {  
+      display: flex;  
+      justify-content: space-between;  
+      align-items: center;  
+      padding: 12px 0;  
+      border-bottom: 1px solid var(--border-color);  
+    }  
+  
+    .dict-item:last-child {  
+      border-bottom: none;  
+    }  
+  
+    .dict-info {  
+      display: flex;  
+      flex-direction: column;  
+      gap: 4px;  
+    }  
+  
+    .dict-es {  
+      font-size: 16px;  
+      font-weight: 600;  
+    }  
+  
+    .dict-ar {  
+      font-size: 14px;  
+      color: var(--text-muted);  
+      direction: rtl;  
+    }  
+  
+    .dict-actions {  
+      display: flex;  
+      gap: 8px;  
+    }  
+  
+    .icon-btn {  
+      background: transparent;  
+      border: none;  
+      color: var(--text-muted);  
+      font-size: 18px;  
+      padding: 8px;  
+      cursor: pointer;  
+    }  
+  
+    .icon-btn:active {  
+      color: var(--primary);  
+    }  
+  
+    .bottom-nav {  
+      position: fixed;  
+      bottom: 0;  
+      left: 0;  
+      right: 0;  
+      background: rgba(255, 255, 255, 0.9);  
+      backdrop-filter: blur(20px);  
+      -webkit-backdrop-filter: blur(20px);  
+      border-top: 1px solid var(--border-color);  
+      display: flex;  
+      justify-content: space-around;  
+      padding: 10px 0 25px 0;  
+      z-index: 1000;  
+    }  
+  
+    .nav-item {  
+      display: flex;  
+      flex-direction: column;  
+      align-items: center;  
+      gap: 4px;  
+      font-size: 11px;  
+      color: var(--text-muted);  
+      text-decoration: none;  
+      cursor: pointer;  
+    }  
+  
+    .nav-item.active {  
+      color: var(--primary);  
+      font-weight: 600;  
+    }  
+  
+    .nav-item i {  
+      font-size: 20px;  
+    }  
+  
+    .tab-content {  
+      display: none;  
+    }  
+  
+    .tab-content.active {  
+      display: block;  
+    }  
+  
+    /* Modal for Adding Words */  
+    .modal {  
+      display: none;  
+      position: fixed;  
+      top:0; left:0; right:0; bottom:0;  
+      background: rgba(0,0,0,0.4);  
+      z-index: 2000;  
+      align-items: center;  
+      justify-content: center;  
+      padding: 20px;  
+    }  
+  
+    .modal-content {  
+      background: var(--card-bg);  
+      border-radius: var(--radius);  
+      padding: 20px;  
+      width: 100%;  
+      max-width: 400px;  
+      box-shadow: var(--shadow);  
+    }  
+  
+    .input-field {  
+      width: 100%;  
+      padding: 12px;  
+      border: 1px solid var(--border-color);  
+      border-radius: 10px;  
+      font-size: 15px;  
+      margin-bottom: 12px;  
+      outline: none;  
+    }  
+  
+    .input-field:focus {  
+      border-color: var(--primary);  
+    }  
+  </style>  
+</head>  
+<body>  
+  
+  <header>  
+    <h1><i class="fa-solid fa-language"></i> Aprende Español</h1>  
+    <span style="font-size: 12px; color: var(--text-muted);">Pro v2.0</span>  
+  </header>  
+  
+  <div class="container">  
+      
+    <!-- Tab 1: OCR Scan -->  
+    <div id="scan-tab" class="tab-content active">  
+      <div class="card">  
+        <div class="card-title">  
+          <i class="fa-solid fa-camera" style="color: var(--primary);"></i> Multi-Image OCR  
+        </div>  
+        <div class="upload-box" onclick="document.getElementById('imageInput').click()">  
+          <i class="fa-solid fa-cloud-arrow-up"></i>  
+          <p>Tap to select images (Red/Blue ink support)</p>  
+          <input type="file" id="imageInput" multiple accept="image/*" onchange="handleImages(this.files)">  
+        </div>  
+        <div class="progress-bar" id="progressBar">  
+          <div class="progress-fill" id="progressFill"></div>  
+        </div>  
+        <p id="statusText" style="font-size: 12px; color: var(--text-muted); margin-top: 8px; text-align: center;"></p>  
+      </div>  
+  
+      <div class="card">  
+        <div class="card-title">  
+          <i class="fa-solid fa-file-lines" style="color: var(--primary);"></i> Extracted Text  
+        </div>  
+        <div class="results-box" id="extractedText">Tap words to quickly save them to your dictionary.</div>  
+      </div>  
+    </div>  
+  
+    <!-- Tab 2: Dictionary -->  
+    <div id="dict-tab" class="tab-content">  
+      <div class="card">  
+        <div class="card-title" style="justify-content: space-between;">  
+          <span><i class="fa-solid fa-book-bookmark" style="color: var(--primary);"></i> Dictionary</span>  
+          <button class="icon-btn" onclick="openAddModal()"><i class="fa-solid fa-plus-circle" style="color: var(--primary); font-size: 22px;"></i></button>  
+        </div>  
+        <input type="text" class="input-field" id="searchDict" placeholder="Search Spanish or Arabic..." oninput="renderDictionary()">  
+        <div id="dictionaryList"></div>  
+      </div>  
+    </div>  
+  
+    <!-- Tab 3: Flashcards/Practice -->  
+    <div id="practice-tab" class="tab-content">  
+      <div class="card" style="text-align: center; padding: 40px 20px;">  
+        <div class="card-title" style="justify-content: center;">  
+          <i class="fa-solid fa-graduation-cap" style="color: var(--primary);"></i> Flashcard Practice  
+        </div>  
+        <div id="flashcard" style="font-size: 24px; font-weight: 700; margin: 30px 0; min-height: 60px; display: flex; align-items: center; justify-content: center;">  
+          Tap "Start" to practice  
+        </div>  
+        <button class="btn" onclick="nextFlashcard()"><i class="fa-solid fa-rotate-right"></i> Next Word</button>  
+      </div>  
+    </div>  
+  
+  </div>  
+  
+  <!-- Bottom Navigation Bar -->  
+  <div class="bottom-nav">  
+    <div class="nav-item active" onclick="switchTab('scan-tab', this)">  
+      <i class="fa-solid fa-camera"></i>  
+      <span>Scanner</span>  
+    </div>  
+    <div class="nav-item" onclick="switchTab('dict-tab', this)">  
+      <i class="fa-solid fa-book"></i>  
+      <span>Dictionary</span>  
+    </div>  
+    <div class="nav-item" onclick="switchTab('practice-tab', this)">  
+      <i class="fa-solid fa-graduation-cap"></i>  
+      <span>Practice</span>  
+    </div>  
+  </div>  
+  
+  <!-- Add Word Modal -->  
+  <div class="modal" id="addModal">  
+    <div class="modal-content">  
+      <h3 style="margin-bottom: 16px;">Add New Word</h3>  
+      <input type="text" id="modalEs" class="input-field" placeholder="Spanish Word (e.g. Hola)">  
+      <input type="text" id="modalAr" class="input-field" placeholder="Arabic Translation (مرحباً)" style="direction: rtl;">  
+      <button class="btn" onclick="saveNewWord()">Save Word</button>  
+      <button class="btn btn-outline" onclick="closeAddModal()" style="margin-top: 8px;">Cancel</button>  
+    </div>  
+  </div>  
+  
+  <script>  
+    let dictionary = JSON.parse(localStorage.getItem('es_dict_pro')) || [];  
+  
+    // Tab Switching  
+    function switchTab(tabId, el) {  
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));  
+      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));  
+      document.getElementById(tabId).classList.add('active');  
+      el.classList.add('active');  
+      if(tabId === 'dict-tab') renderDictionary();  
+    }  
+  
+    // Speech Synthesis  
+    function speak(text) {  
+      if ('speechSynthesis' in window) {  
+        window.speechSynthesis.cancel();  
+        const utterance = new SpeechSynthesisUtterance(text);  
+        utterance.lang = 'es-ES';  
+        utterance.rate = 0.9;  
+        window.speechSynthesis.speak(utterance);  
+      }  
+    }  
+  
+    // OCR Logic  
+    async function handleImages(files) {  
+      if (!files.length) return;  
+  
+      const progressFill = document.getElementById('progressFill');  
+      const progressBar = document.getElementById('progressBar');  
+      const statusText = document.getElementById('statusText');  
+      const extractedBox = document.getElementById('extractedText');  
+  
+      progressBar.style.display = 'block';  
+      extractedBox.innerHTML = '';  
+  
+      for (let i = 0; i < files.length; i++) {  
+        statusText.innerText = `Processing image ${i + 1} of ${files.length}...`;  
+        progressFill.style.width = `${((i) / files.length) * 100}%`;  
+  
+        try {  
+          const worker = await Tesseract.createWorker('spa');  
+          const ret = await worker.recognize(files[i]);  
+          await worker.terminate();  
+  
+          const words = ret.data.text.split(/\s+/);  
+          words.forEach(word => {  
+            if (word.trim().length > 1) {  
+              const span = document.createElement('span');  
+              span.className = 'detected-word';  
+              span.innerText = word;  
+              span.onclick = () => quickAddWord(word);  
+              extractedBox.appendChild(span);  
+            }  
+          });  
+        } catch (err) {  
+          console.error(err);  
+        }  
+      }  
+  
+      progressFill.style.width = '100%';  
+      statusText.innerText = 'OCR Processing Complete!';  
+      setTimeout(() => progressBar.style.display = 'none', 2000);  
+    }  
+  
+    // Dictionary Management  
+    function renderDictionary() {  
+      const list = document.getElementById('dictionaryList');  
+      const query = document.getElementById('searchDict').value.toLowerCase();  
+      list.innerHTML = '';  
+  
+      const filtered = dictionary.filter(item =>   
+        item.es.toLowerCase().includes(query) || item.ar.includes(query)  
+      );  
+  
+      if (filtered.length === 0) {  
+        list.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding: 20px;">No words found.</p>';  
+        return;  
+      }  
+  
+      filtered.forEach((item, index) => {  
+        const div = document.createElement('div');  
+        div.className = 'dict-item';  
+        div.innerHTML = `  
+          <div class="dict-info">  
+            <span class="dict-es">${item.es}</span>  
+            <span class="dict-ar">${item.ar}</span>  
+          </div>  
+          <div class="dict-actions">  
+            <button class="icon-btn" onclick="speak('${item.es}')"><i class="fa-solid fa-volume-high"></i></button>  
+            <button class="icon-btn" onclick="deleteWord(${index})"><i class="fa-solid fa-trash" style="color:var(--danger)"></i></button>  
+          </div>  
+        `;  
+        list.appendChild(div);  
+      });  
+    }  
+  
+    function quickAddWord(esWord) {  
+      const ar = prompt(`Enter Arabic translation for "${esWord}":`);  
+      if (ar) {  
+        dictionary.push({ es: esWord, ar: ar });  
+        localStorage.setItem('es_dict_pro', JSON.stringify(dictionary));  
+        alert('Saved to dictionary!');  
+      }  
+    }  
+  
+    function openAddModal() {  
+      document.getElementById('addModal').style.display = 'flex';  
+    }  
+  
+    function closeAddModal() {  
+      document.getElementById('addModal').style.display = 'none';  
+      document.getElementById('modalEs').value = '';  
+      document.getElementById('modalAr').value = '';  
+    }  
+  
+    function saveNewWord() {  
+      const es = document.getElementById('modalEs').value.trim();  
+      const ar = document.getElementById('modalAr').value.trim();  
+      if (es && ar) {  
+        dictionary.push({ es, ar });  
+        localStorage.setItem('es_dict_pro', JSON.stringify(dictionary));  
+        closeAddModal();  
+        renderDictionary();  
+      }  
+    }  
+  
+    function deleteWord(index) {  
+      dictionary.splice(index, 1);  
+      localStorage.setItem('es_dict_pro', JSON.stringify(dictionary));  
+      renderDictionary();  
+    }  
+  
+    // Flashcard System  
+    let currentCardIndex = 0;  
+    let showingAnswer = false;  
+  
+    function nextFlashcard() {  
+      if (dictionary.length === 0) {  
+        document.getElementById('flashcard').innerText = "Add words to your dictionary first!";  
+        return;  
+      }  
+      const card = document.getElementById('flashcard');  
+      if (!showingAnswer) {  
+        currentCardIndex = Math.floor(Math.random() * dictionary.length);  
+        card.innerText = dictionary[currentCardIndex].es;  
+        speak(dictionary[currentCardIndex].es);  
+        showingAnswer = true;  
+      } else {  
+        card.innerText = dictionary[currentCardIndex].ar;  
+        showingAnswer = false;  
+      }  
+    }  
+  </script>  
+</body>  
+</html>  
